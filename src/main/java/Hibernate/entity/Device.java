@@ -5,25 +5,37 @@ import javax.persistence.*;
 @Entity
 public class Device {
     @Id
-    @Column(name = "device_Id", nullable = false)
     private Long device_Id;
-    @Column(name = "name")
     String name;
-    @Column(name = "status")
+    String type;
+    int value;
     boolean status;
-    @OneToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "person")
-    Person person;
 
-    public Device(Long device_Id, String name, boolean status, Person person) {
-        this.device_Id = device_Id;
-        this.name = name;
-        this.status = status;
-        this.person = person;
-    }
+    @ManyToOne(
+            cascade = CascadeType.ALL,
+            optional = false
+    )
+    Household household;
 
     public Device() {
 
+    }
+
+    public Device(Long device_Id, String name, String type, int value, boolean status, Household household) {
+        this.device_Id = device_Id;
+        this.name = name;
+        this.type = type;
+        this.value = value;
+        this.status = status;
+        this.household = household;
+    }
+
+    public Long getDevice_Id() {
+        return device_Id;
+    }
+
+    public void setDevice_Id(Long device_Id) {
+        this.device_Id = device_Id;
     }
 
     public String getName() {
@@ -34,6 +46,21 @@ public class Device {
         this.name = name;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
 
     public boolean isStatus() {
         return status;
@@ -43,21 +70,12 @@ public class Device {
         this.status = status;
     }
 
-    public void setPerson(Person person) {
-        this.person = person;
+    public Household getHousehold() {
+        return household;
     }
 
-    public Person getPerson() {
-        return person;
+    public void setHousehold(Household household) {
+        this.household = household;
     }
-
-    public Long getDevice_Id() {
-        return device_Id;
-    }
-
-    public void setDevice_Id(Long cariId) {
-        this.device_Id = cariId;
-    }
-
 
 }

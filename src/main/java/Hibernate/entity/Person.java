@@ -1,22 +1,37 @@
 package Hibernate.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import java.io.Serializable;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
-public class Person implements Serializable {
+public class Person {
     @Id
-    @Column(name = "id", nullable = false)
-    private Long id;
-    @Column(name = "name")
+    private Long person_id;
     String name;
-    @Column(name = "age")
-    int age;
-
+    String email;
+    String password;
+    @OneToMany(
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH},
+            fetch = FetchType.LAZY,
+            mappedBy = "person"
+    )
+     List<Household> households;
     public Person() {
+    }
 
+    public Person(Long person_id, String name, String email, String password) {
+        this.person_id = person_id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
+
+    public Long getPerson_id() {
+        return person_id;
+    }
+
+    public void setPerson_id(Long person_id) {
+        this.person_id = person_id;
     }
 
     public String getName() {
@@ -27,25 +42,27 @@ public class Person implements Serializable {
         this.name = name;
     }
 
-    public int getAge() {
-        return age;
+    public String getEmail() {
+        return email;
     }
 
-    public void setAge(int age) {
-        this.age = age;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public Person(Long id, String name, int age) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
+    public String getPassword() {
+        return password;
     }
 
-    public Long getId() {
-        return id;
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    @Transient
+    public List<Household> getHouseholds() {
+        return DatabaseHandler.getHousehold(this);
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setHouseholds(List<Household> households) {
+        this.households = households;
     }
 }

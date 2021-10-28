@@ -3,21 +3,26 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
              version="2.2">
-  <persistence-unit name="default">
-    <properties>
-      <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/myDB"/>
-      <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver"/>
-      <property name="hibernate.connection.username" value="root"/>
-      <property name="hibernate.connection.password" value="root"/>
+
+    <persistence-unit name="default">
+
+        <properties>
+            <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/myDB"/>
+            <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver"/>
+            <property name="hibernate.connection.username" value="root"/>
+            <property name="hibernate.connection.password" value="root"/>
 
 
-      <!--                this line will create the DB if not exists with the mapping -->
-      <!--            <property name="javax.persistence.schema-generation.database.action"-->
-      <!--                      value="drop-and-create"/>-->
-      <property name=" persistence.sql-load-script-source"
-                value="table-records.sql"/>
+            <!--                this line will create the DB if not exists with the mapping -->
+            <property name="javax.persistence.schema-generation.database.action"
+                      value="drop-and-create"/>
+            <property name=" persistence.sql-load-script-source"
+                      value="table-records.sql"/>
 
 
-    </properties>
-  </persistence-unit>
+        </properties>
+
+    </persistence-unit>
+
+
 </persistence>

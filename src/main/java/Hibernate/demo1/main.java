@@ -36,11 +36,14 @@ public class main {
 //                faker.name().firstName(), random.nextInt(100));
 //        Device device = new Device(random.nextLong(), faker.company().name()
 //                , random.nextBoolean(), person);
-        Person person = new Person(1221l, faker.name().firstName(),
+        Person person = new Person(0l, faker.name().firstName(),
+                faker.internet().emailAddress(), faker.internet().password());
+        Person person1 = new Person(1l, faker.name().firstName(),
                 faker.internet().emailAddress(), faker.internet().password());
 
         Household household = new Household(random.nextLong(), faker.address().city(),person);
-
+        Household household1 = new Household(random.nextLong(), faker.address().city(),person);
+        Household household2 = new Household(random.nextLong(), faker.address().city(),person);
 
         Device device = new Device(random.nextLong(), faker.company().name(),
                 "lamp", 1, random.nextBoolean(), household);
@@ -51,9 +54,17 @@ public class main {
 //        Starting the transaction to the DB
         try {
             transaction.begin();
-//            entityManager.persist(device);
-//            entityManager.persist(device1);
-//            entityManager.persist(device2);
+            entityManager.persist(person);
+            entityManager.persist(person1);
+
+
+            entityManager.persist(household);
+            entityManager.persist(household1);
+            entityManager.persist(household2);
+
+            entityManager.persist(device1);
+            entityManager.persist(device1);
+            entityManager.persist(device2);
             transaction.commit();
         } finally {
             if (transaction.isActive()) {

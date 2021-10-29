@@ -1,9 +1,10 @@
 package Hibernate.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
-public class Device {
+public class Device implements Serializable {
     @Id
     private Long device_Id;
     String name;
@@ -12,8 +13,8 @@ public class Device {
     boolean status;
 
     @ManyToOne(
-            cascade = CascadeType.ALL,
-            optional = false
+                    cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH},
+            fetch = FetchType.LAZY
     )
     Household household;
 

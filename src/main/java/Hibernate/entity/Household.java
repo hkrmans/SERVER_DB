@@ -1,18 +1,25 @@
 package Hibernate.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Table(name = "household")
 @Entity
-public class Household {
+public class Household implements Serializable {
     @Id
     @Column(name = "household_id", nullable = false)
     private Long household_id;
     String name;
 
-    @ManyToOne
-    @JoinColumn(name = "household_person_id")
-    private Person person;
+
+
+
+     @ManyToOne(
+             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH},
+             fetch = FetchType.LAZY
+     )
+     @JoinColumn(name = "person_person_id")
+     Person person;
 
 
     public Household(Long household_id, String name, Person person) {

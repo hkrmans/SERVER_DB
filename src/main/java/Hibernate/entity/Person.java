@@ -1,17 +1,19 @@
 package Hibernate.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
-public class Person {
+public class Person implements Serializable {
     @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)//strategy for generating auto generated number
     private Long person_id;
     String name;
     String email;
     String password;
     @OneToMany(
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH},
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH,CascadeType.ALL},
             fetch = FetchType.LAZY,
             mappedBy = "person"
     )

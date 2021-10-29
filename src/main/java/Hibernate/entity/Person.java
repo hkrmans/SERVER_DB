@@ -7,10 +7,16 @@ import java.util.List;
 @Entity
 public class Person implements Serializable {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)//strategy for generating auto generated number
+    @Column(name= "person_id", nullable = false)
     private Long person_id;
+    @Column(name= "name", nullable = false)
+
     String name;
+    @Column(name= "email", nullable = false)
+
     String email;
+    @Column(name= "password", nullable = false)
+
     String password;
     @OneToMany(
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH,CascadeType.ALL},

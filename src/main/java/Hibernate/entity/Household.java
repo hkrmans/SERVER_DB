@@ -10,10 +10,6 @@ public class Household implements Serializable {
     @Column(name = "household_id", nullable = false)
     private Long household_id;
     String name;
-
-
-
-
      @ManyToOne(
              cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH},
              fetch = FetchType.LAZY

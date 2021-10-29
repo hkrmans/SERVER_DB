@@ -16,7 +16,7 @@ public class main {
     public static void main(String[] args) {
 //if the code doesn't work fist time go to Persistence.xml and un comment line 17 & 18.
         // adding 10 demo
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 3; i++) {
             demo();
         }
 
@@ -46,11 +46,11 @@ public class main {
         Household household2 = new Household(random.nextLong(), faker.address().city(),person);
 
         Device device = new Device(random.nextLong(), faker.company().name(),
-                "lamp", 1, random.nextBoolean(), household);
-        Device device1 = new Device(random.nextLong(), faker.company().name(),
-                "lamp", 1, random.nextBoolean(), household);
-        Device device2 = new Device(random.nextLong(), faker.company().name(),
-                "lamp", 1, random.nextBoolean(), household);
+                "lamp", 1, "m011","m111", household);
+        Device device1 =new Device(random.nextLong(), faker.company().name(),
+                "lamp", 1, "m011","m111", household);
+        Device device2 =new Device(random.nextLong(), faker.company().name(),
+                "lamp", 1, "m011","m111", household);
 //        Starting the transaction to the DB
         try {
             transaction.begin();

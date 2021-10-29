@@ -6,14 +6,20 @@ import java.io.Serializable;
 @Entity
 public class Device implements Serializable {
     @Id
+    @Column(name = "device_Id", nullable = false)
     private Long device_Id;
+    @Column(name = "name", nullable = false)
     String name;
+    @Column(name = "type", nullable = false)
     String type;
+    @Column(name = "value", nullable = false)
     int value;
-    boolean status;
+    String commandOn;
+    String commandOff;
+
 
     @ManyToOne(
-                    cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH},
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH},
             fetch = FetchType.LAZY
     )
     Household household;
@@ -22,12 +28,14 @@ public class Device implements Serializable {
 
     }
 
-    public Device(Long device_Id, String name, String type, int value, boolean status, Household household) {
+    public Device(Long device_Id, String name, String type, int value, String commandOn, String commandOff, Household household) {
         this.device_Id = device_Id;
         this.name = name;
         this.type = type;
         this.value = value;
-        this.status = status;
+        this.commandOn = commandOn;
+        this.commandOff = commandOff;
+
         this.household = household;
     }
 
@@ -63,12 +71,21 @@ public class Device implements Serializable {
         this.value = value;
     }
 
-    public boolean isStatus() {
-        return status;
+
+    public String getCommandOn() {
+        return commandOn;
     }
 
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void setCommandOn(String commandOn) {
+        this.commandOn = commandOn;
+    }
+
+    public String getCommandOff() {
+        return commandOff;
+    }
+
+    public void setCommandOff(String commandOff) {
+        this.commandOff = commandOff;
     }
 
     public Household getHousehold() {

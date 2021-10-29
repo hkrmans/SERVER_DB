@@ -9,7 +9,7 @@ public class Person implements Serializable {
     @Id
     @Column(name= "person_id", nullable = false)
     private Long person_id;
-    @Column(name= "name", nullable = false)
+    @Column(name = "name", nullable = false)
 
     String name;
     @Column(name= "email", nullable = false)
@@ -65,7 +65,6 @@ public class Person implements Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
-    @Transient
     public List<Household> getHouseholds() {
         return DatabaseHandler.getHousehold(this);
     }

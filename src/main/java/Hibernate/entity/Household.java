@@ -10,12 +10,12 @@ public class Household implements Serializable {
     @Column(name = "household_id", nullable = false)
     private Long household_id;
     String name;
-     @ManyToOne(
-             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH},
-             fetch = FetchType.LAZY
-     )
-     @JoinColumn(name = "person_person_id")
-     Person person;
+    @ManyToOne(
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH},
+            fetch = FetchType.LAZY
+    )
+    @JoinColumn(name = "person_person_id")
+    Person person;
 
 
     public Household(Long household_id, String name, Person person) {
@@ -51,8 +51,6 @@ public class Household implements Serializable {
     public void setPerson(Person person) {
         this.person = person;
     }
-
-
 
 
 }

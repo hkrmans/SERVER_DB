@@ -14,8 +14,7 @@ import java.util.Random;
 
 public class main {
     public static void main(String[] args) {
-//if the code doesn't work fist time go to Persistence.xml and un comment line 17 & 18.
-        // adding 10 demo
+
         for (int i = 0; i < 3; i++) {
             demo();
         }
@@ -32,10 +31,7 @@ public class main {
 //       Random template
         Faker faker = new Faker();
         Random random = new Random();
-//        Person person = new Person(random.nextLong(),
-//                faker.name().firstName(), random.nextInt(100));
-//        Device device = new Device(random.nextLong(), faker.company().name()
-//                , random.nextBoolean(), person);
+
         Person person = new Person(0l, faker.name().firstName(),
                 faker.internet().emailAddress(), faker.internet().password());
         Person person1 = new Person(1l, faker.name().firstName(),

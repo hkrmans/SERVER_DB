@@ -9,5 +9,8 @@
         <module name="SERVER_DB" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="SERVER_DB" target="16" />
+    </bytecodeTargetLevel>
   </component>
 </project>

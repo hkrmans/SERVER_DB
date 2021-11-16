@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class websocketServer {
+public class WebSocketServer {
     DBHandler dbHandler = new DBHandler();
 
     private static final int OPCODE_STATUS_DEVICE = 10;
@@ -30,7 +30,7 @@ public class websocketServer {
 
     static User demoUser;
 
-    public websocketServer(DevicesServer ds) {
+    public WebSocketServer(DevicesServer ds) {
         this.ds = ds;
     }
 

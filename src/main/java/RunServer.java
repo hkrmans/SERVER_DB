@@ -12,8 +12,8 @@ public class RunServer {
 
         while(true){
             if (rss.getSs() != null){
-                socketServer ss = rss.getSs();
-                ss.sendToClient("Aiids");
+                SocketServer ss = rss.getSs();
+                ss.sendToClient("test");
             }
         }
     }

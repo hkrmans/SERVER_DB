@@ -7,7 +7,7 @@ public class RunSocketServer extends Thread{
     ServerSocketChannel serverSocket = null;
     SocketChannel client = null;
 
-    socketServer ss ;
+    SocketServer ss ;
 
     public RunSocketServer() {
     }
@@ -19,7 +19,7 @@ public class RunSocketServer extends Thread{
 
             while(true){
                 client = serverSocket.accept();
-                ss = new socketServer(client);
+                ss = new SocketServer(client);
                 ss.start();
             }
         }catch (IOException e){
@@ -27,7 +27,7 @@ public class RunSocketServer extends Thread{
         }
     }
 
-    public socketServer getSs() {
+    public SocketServer getSs() {
         return ss;
     }
 }

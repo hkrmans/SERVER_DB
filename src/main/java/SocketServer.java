@@ -8,11 +8,11 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-public class socketServer extends Thread {
+public class SocketServer extends Thread {
 
     private SocketChannel client;
 
-    public socketServer(SocketChannel client) {
+    public SocketServer(SocketChannel client) {
         this.client = client;
     }
 
@@ -55,7 +55,7 @@ public class socketServer extends Thread {
         }
     }
 
-    public void sendToClient(String aiids) throws IOException {
+    public void sendToClient(String string) throws IOException {
         ArrayList<String> companyDetails = new ArrayList<String>();
 
 // create a ArrayList with companyName list
@@ -65,7 +65,6 @@ public class socketServer extends Thread {
         companyDetails.add("IBM\n");
         companyDetails.add("Google\n");
         companyDetails.add("Crunchify\n");
-        companyDetails.add("koooooodd\n");
 
         for (String companyName : companyDetails) {
             byte[] message = companyName.getBytes();

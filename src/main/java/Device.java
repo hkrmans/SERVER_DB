@@ -8,7 +8,7 @@ public class Device {
     public Device() {
     }
 
-    public Device
+    public Device(int deviceId, String name,String type,int value,int householdId){
         this.deviceId = deviceId;
         this.name = name;
         this.type = type;

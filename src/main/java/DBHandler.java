@@ -1,15 +1,15 @@
+import org.hibernate.sql.Update;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 
 public class DBHandler {
 
-    ArrayList<DeviceDB> list = new ArrayList<>();
-    EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
-    EntityManager entityManager = entityManagerFactory.createEntityManager();
-    EntityTransaction transaction = entityManager.getTransaction();
-    private java.util.Map<String, Object> Map;
 
     public DeviceDB getDeviceDB(int id) {
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
         try {
             entityManager.getTransaction().begin();
             DeviceDB device = entityManager.find(DeviceDB.class, id);
@@ -19,9 +19,20 @@ public class DBHandler {
             e.printStackTrace();
             return null;
         }
+        finally {
+            if (transaction.isActive()) {
+
+                transaction.rollback();
+            }
+            entityManager.clear();
+            entityManagerFactory.close();
+        }
     }
 
     public ArrayList<Device> householdDevices(int householdId) {
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
         ArrayList<Device> householdDevices = new ArrayList<>();
 
         try {
@@ -39,17 +50,69 @@ public class DBHandler {
             e.printStackTrace();
             return null;
         }
+        finally {
+            if (transaction.isActive()) {
+
+                transaction.rollback();
+            }
+            entityManager.clear();
+            entityManagerFactory.close();
+        }
+    }
+
+    public void updateUserHouseholdValue(User user) {
+
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        entityManager.getTransaction().begin();
+        UserDB user2 = getUserUsingUsername(user.getUsername());
+        user2.setHouseholdId(user.getHouseholdId());
+        entityManager.merge(user2);
+        entityManager.getTransaction().commit();
+
+        if (transaction.isActive()) {
+            transaction.rollback();
+        }
+        entityManager.clear();
+        entityManagerFactory.close();
     }
 
     public void updateDeviceValue(DeviceDB device) {
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
         entityManager.getTransaction().begin();
         entityManager.merge(device);
         entityManager.getTransaction().commit();
+
+        if (transaction.isActive()) {
+            transaction.rollback();
+        }
+        entityManager.clear();
+        entityManagerFactory.close();
+    }
+
+    public void updateUser(UserDB userDB) {
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        entityManager.getTransaction().begin();
+        entityManager.merge(userDB);
+        entityManager.getTransaction().commit();
+
+        if (transaction.isActive()) {
+            transaction.rollback();
+        }
+        entityManager.clear();
+        entityManagerFactory.close();
     }
 
 
     public DeviceDB getDeviceUsingCommands(String command) {
-        ArrayList<Device> householdDevices = new ArrayList<>();
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
         command = "'" + command + "'";
         try {
             String strQuery = "SELECT c FROM DeviceDB c WHERE c.commandOn = " + command;
@@ -67,6 +130,116 @@ public class DBHandler {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+        finally {
+            if (transaction.isActive()) {
+
+                transaction.rollback();
+            }
+            entityManager.clear();
+            entityManagerFactory.close();
+        }
+    }
+
+    public UserDB getUserUsingUsername(String username) {
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        username = "'" + username + "'";
+
+        try {
+            String strQuery = "SELECT c FROM UserDB c WHERE c.username = " + username;
+            TypedQuery<UserDB> typedQuery = entityManager.createQuery(strQuery, UserDB.class);
+            ArrayList<UserDB> userDBS;
+            userDBS = (ArrayList<UserDB>) typedQuery.getResultList();
+
+            if(userDBS.size() ==  0){
+                return null;
+            }
+            return userDBS.get(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        finally {
+            if (transaction.isActive()) {
+
+                transaction.rollback();
+            }
+            entityManager.clear();
+            entityManagerFactory.close();
+        }
+    }
+
+    public HouseholdDB getHousehold(int householdID) {
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            String strQuery = "SELECT c FROM HouseholdDB c WHERE c.householdId = " + householdID;
+            TypedQuery<HouseholdDB> typedQuery = entityManager.createQuery(strQuery, HouseholdDB.class);
+            ArrayList<HouseholdDB> householdDBS;
+            householdDBS = (ArrayList<HouseholdDB>) typedQuery.getResultList();
+
+            if(householdDBS.size() ==  0){
+                return null;
+            }
+            return householdDBS.get(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        finally {
+            if (transaction.isActive()) {
+
+                transaction.rollback();
+            }
+            entityManager.clear();
+            entityManagerFactory.close();
+        }
+    }
+
+    public void createUser(User user){
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        // set up the connection throw
+        UserDB userDB = new UserDB(0,user.getUsername(),user.getPassword(), user.getName(),user.getHouseholdId());
+//        Starting the transaction to the DB
+        try {
+            transaction.begin();
+            entityManager.persist(userDB);
+            transaction.commit();
+        } finally {
+            if (transaction.isActive()) {
+
+                transaction.rollback();
+            }
+            entityManager.clear();
+            entityManagerFactory.close();
+        }
+    }
+
+    public HouseholdDB createHousehold (Household household){
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        // set up the connection throw
+        HouseholdDB householdDB = new HouseholdDB(0,household.getName());
+//        Starting the transaction to the DB
+        try {
+            transaction.begin();
+            entityManager.persist(householdDB);
+            entityManager.flush();
+            transaction.commit();
+            return householdDB;
+        } finally {
+            if (transaction.isActive()) {
+
+                transaction.rollback();
+            }
+            entityManager.clear();
+            entityManagerFactory.close();
         }
     }
 

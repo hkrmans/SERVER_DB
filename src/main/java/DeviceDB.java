@@ -16,8 +16,8 @@ public class DeviceDB {
     private String type;
     @Column(name = "value", nullable = false)
     private int value;
-    @Column(name = "householdId", nullable = false)
-    private int householdId;
+    @Column(name = "householdId", nullable = true)
+    private Integer householdId;
     @Column(name = "commandOn", nullable = false)
     private String commandOn;
     @Column(name = "commandOff", nullable = false)
@@ -27,7 +27,7 @@ public class DeviceDB {
 
    }
 
-    public DeviceDB(int deviceId, String name, String type, int value, int householdId, String commandOn, String commandOff) {
+    public DeviceDB(int deviceId, String name, String type, int value, Integer householdId, String commandOn, String commandOff) {
         this.deviceId = deviceId;
         this.name = name;
         this.type = type;
@@ -69,12 +69,15 @@ public class DeviceDB {
         this.value = value;
     }
 
-    public int getHouseholdId() {
+    public Integer getHouseholdId() {
+       if(householdId == null){
+           return null;
+       }
         return householdId;
     }
 
-    public void setHouseholdId(int householdId) {
-        this.householdId = householdId;
+    public void setHouseholdId(Integer householdId) {
+        this.householdId =   householdId;
     }
 
     public String getCommandOn() {

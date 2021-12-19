@@ -4,6 +4,7 @@ public class User {
     String name;
     int householdId;
     String token;
+    String password;
 
     public User() {
     }
@@ -54,5 +55,13 @@ public class User {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

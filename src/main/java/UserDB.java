@@ -1,7 +1,4 @@
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
@@ -9,6 +6,7 @@ import java.io.Serializable;
 public class UserDB implements Serializable {
 
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "userId", nullable = false)
     private int userId;
     @Column(name = "username", nullable = false)

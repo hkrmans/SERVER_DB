@@ -4,21 +4,18 @@ import io.javalin.websocket.WsContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class WebSocketServer {
-    DBHandler dbHandler = new DBHandler();
+    static DBHandler dbHandler = new DBHandler();
 
     private static final int OPCODE_STATUS_DEVICE = 10;
     private static final int OPCODE_STATUS_ALL_DEVICES = 11;
     private static final int OPCODE_CHANGE_DEVICE_STATUS = 20;
     private static final int OPCODE_CHANGE_DEVICE_HOUSEHOLD = 21;
-    private static final int OPCODE_CHANGE_DEVICE_NOTOK = 40;
-
-    private DevicesServer ds;
+    private static final int OPCODE_CHANGE_DEVICE_NOTOK = 40; // använd för att felsöka
 
     private static final int CONNECTION_IDLE_TIMEOUT = 3600000;
 
@@ -28,11 +25,18 @@ public class WebSocketServer {
     private static Gson gson;
 
 
+    private static WebSocketServer ws;
+
+    public static WebSocketServer getInstance() {
+        if (ws == null) {
+            ws = new WebSocketServer();
+        }
+        return ws;
+    }
+
+
     static User demoUser;
 
-    public WebSocketServer(DevicesServer ds) {
-        this.ds = ds;
-    }
 
     public void run() {
         gson = new Gson();
@@ -102,49 +106,26 @@ public class WebSocketServer {
 
     public void changeDeviceStatus(WsContext senderCtx, JSONObject msgFromClient) {
 
-        ArrayList<String> commands = new ArrayList<>();
-        Device device = gson.fromJson(String.valueOf(msgFromClient.get("data")), Device.class); //json array kolla på sendAll love jonte !!!
-
+        ArrayList<String> commandsTry = new ArrayList<>();
+        Device device = gson.fromJson(String.valueOf(msgFromClient.get("data")), Device.class);
         DeviceDB deviceDB = dbHandler.getDeviceDB(device.getDeviceId());
 
         if (device.getValue() == 1) {
-            commands.add(deviceDB.getCommandOn());
+            String message = deviceDB.getDeviceId() + "-" + deviceDB.getCommandOn();
+            commandsTry.add(message);
         } else {
-            commands.add(deviceDB.getCommandOff());
+            String message = deviceDB.getDeviceId() + "-" + deviceDB.getCommandOff();
+            commandsTry.add(message);
         }
 
-        ArrayList<String> commandResponses = new ArrayList<>();
-
-        try {
-            commandResponses = ds.getStatus(commands);
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        if (commandResponses .get(0).equalsIgnoreCase("ok")) {
-            deviceDB.setValue(device.getValue());
-            System.out.println(deviceDB.getValue());
-            dbHandler.updateDeviceValue(deviceDB);
-            userUsernameMap.keySet().stream().filter(ctx -> ctx.session.isOpen()).forEach(session -> {
-                session.send(
-                        new JSONObject()
-                                .put("opcode", OPCODE_STATUS_DEVICE)
-                                .put("data", gson.toJson(device))
-                                .toString()
-                );
-            });
-        } else{
-            senderCtx.send(
-                    new JSONObject()
-                            .put("opcode", OPCODE_CHANGE_DEVICE_NOTOK)
-                            .put("data", gson.toJson(device))
-                            .toString()
-            );
-        }
+        ArduinoWebsocket aw = ArduinoWebsocket.getInstance();
+        aw.send(commandsTry);
     }
 
     private void sendAllDevice(WsContext ctx) {
         int householdId = userUsernameMap.get(ctx).getHouseholdId();
+
+        // returna om det inte får något meddelande.
 
         JSONArray jsonArray = new JSONArray();
 
@@ -161,5 +142,45 @@ public class WebSocketServer {
                         .put("data", jsonArray)
                         .toString()
         );
+    }
+
+    public void deviceUpdate(ArrayList<String> info) {
+        String messageResponse = info.get(0);
+        String[] response = messageResponse.split("-");
+        int deviceUsed;
+        String responseDetails = null;
+        DeviceDB deviceDB = null;
+
+
+        if(response.length > 2){
+            deviceUsed = Integer.parseInt(response[0]);
+            responseDetails = response[2];
+
+            deviceDB = dbHandler.getDeviceDB(deviceUsed);
+        }else{
+            String command =  response[0];
+            responseDetails = response[1];
+            deviceDB = dbHandler.getDeviceUsingCommands(command);
+        }
+
+        if (responseDetails != null && responseDetails.equalsIgnoreCase("ok")) {
+            if (deviceDB.getValue() == 0) {
+                deviceDB.setValue(1);
+
+            } else {
+                deviceDB.setValue(0);
+            }
+        }
+        dbHandler.updateDeviceValue(deviceDB);
+        Device device = new Device(deviceDB.getDeviceId(), deviceDB.getName(), deviceDB.getType(), deviceDB.getValue(), deviceDB.getHouseholdId());
+
+        userUsernameMap.keySet().stream().filter(ctx -> ctx.session.isOpen()).forEach(session -> {
+            session.send(
+                    new JSONObject()
+                            .put("opcode", OPCODE_STATUS_DEVICE)
+                            .put("data", gson.toJson(device))
+                            .toString()
+            );
+        });
     }
 }

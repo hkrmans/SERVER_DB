@@ -3,6 +3,7 @@ import io.javalin.Javalin;
 import io.javalin.websocket.WsContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -79,14 +80,14 @@ public class WebSocketServer {
                 UserDB userDB = dbHandler.getUserUsingUsername(username);
 
                 //On new connection, check if valid token
-                if (token == null || !token.matches(userDB.getUsername() + "\\$" + userDB.getPassword())){
+                if (token == null || !token.matches(userDB.getUsername() + "\\$" + userDB.getPassword())) {
                     System.out.println("incorrect token, closing");
                     sendInvalidTokenResponse(ctx);
                     ctx.session.close(1000, "Invalid user");
                     return;
                 }
 
-                User user = new User(userDB.getUserId(),userDB.getUsername(),userDB.getName(),userDB.getHouseholdId(),null);
+                User user = new User(userDB.getUserId(), userDB.getUsername(), userDB.getName(), userDB.getHouseholdId(), null);
                 //Store connection in map
                 userUsernameMap.put(ctx, user);
                 System.out.println(user.getUsername() + " connected");
@@ -182,12 +183,22 @@ public class WebSocketServer {
     }
 
     public void changeDeviceStatus(WsContext senderCtx, JSONObject msgFromClient) {
-
         ArrayList<String> commandsTry = new ArrayList<>();
         Device device = gson.fromJson(String.valueOf(msgFromClient.get("data")), Device.class);
         DeviceDB deviceDB = dbHandler.getDeviceDB(device.getDeviceId());
 
-        if (device.getValue() == 1) {
+        if(device.getTimer() != 0){
+            deviceDB.setTimer(device.getTimer());
+            dbHandler.updateDeviceValue(deviceDB);
+            String message = deviceDB.getDeviceId() + "-" + deviceDB.getCommandOn();
+            commandsTry.add(message);
+        }else if (device.getType().equalsIgnoreCase("fan")){
+            String message = deviceDB.getDeviceId() + "-" + deviceDB.getCommandOn() + (int)(device.getValue()*2.55);
+            commandsTry.add(message);
+        }else if (device.getType().equalsIgnoreCase("autosettings")){
+            String message = deviceDB.getDeviceId() + "-" + deviceDB.getCommandOn() + (int)(device.getValue());
+            commandsTry.add(message);
+        }else if (device.getValue() == 1) {
             String message = deviceDB.getDeviceId() + "-" + deviceDB.getCommandOn();
             commandsTry.add(message);
         } else {
@@ -204,7 +215,7 @@ public class WebSocketServer {
 
         HouseholdDB householdDB = dbHandler.getHousehold(householdId);
 
-        Household household = new Household(householdDB.getHouseholdId(),householdDB.getName());
+        Household household = new Household(householdDB.getHouseholdId(), householdDB.getName());
 
 
         // returna om det inte får något meddelande.
@@ -222,7 +233,8 @@ public class WebSocketServer {
                 new JSONObject()
                         .put("opcode", OPCODE_STATUS_ALL_DEVICES)
                         .put("data", jsonArray)
-                        .put("household",gson.toJson(household))
+                        .put("household", gson.toJson(household))
+                        .put("nameOfUser", userUsernameMap.get(ctx).getName())
                         .toString()
         );
     }
@@ -232,32 +244,74 @@ public class WebSocketServer {
         String[] response = messageResponse.split("-");
         int deviceUsed;
         String responseDetails = null;
+        String command = null;
         DeviceDB deviceDB = null;
+        System.out.println(info.get(0));
 
-
-        if(response.length > 2){
+        // när jag får av jonte gör vi sånt här trams
+        if (response.length > 2) {
             deviceUsed = Integer.parseInt(response[0]);
+            command = response[1];
             responseDetails = response[2];
 
             deviceDB = dbHandler.getDeviceDB(deviceUsed);
-        }else{
-            String command =  response[0];
+            System.out.println(deviceDB.getValue() + " " + deviceUsed);
+            if(deviceDB.getType().equalsIgnoreCase("fan")){
+                int trams = (int)(Integer.valueOf(response[2])/2.55);
+                deviceDB.setValue(trams);
+            }else if (deviceDB.getType().equalsIgnoreCase("autosettings")){
+                int trams = (int)(Integer.valueOf(response[2]));
+                deviceDB.setValue(trams);
+            }
+
+        } else { // när jag får av simpiss squad så gör jag sånt här trams
+            command = response[0];
             responseDetails = response[1];
-            deviceDB = dbHandler.getDeviceUsingCommands(command);
+
+
+            if (messageResponse.contains("alarm") || messageResponse.contains("leakage")) {
+                deviceDB = dbHandler.getDeviceDBFromAlarm(command);
+                deviceDB.setValue(2);
+            } else {
+                deviceDB = dbHandler.getDeviceUsingCommands(command);
+            }
+        }
+
+        if(deviceDB.getType().equals("thermometer") || deviceDB.getType().equals("powersensor")){
+            deviceDB.setValue(Integer.valueOf(responseDetails));
         }
 
         if (responseDetails != null && responseDetails.equalsIgnoreCase("ok")) {
-            if (deviceDB.getValue() == 0) {
+            if (deviceDB.getCommandOn().equalsIgnoreCase(command)) {
                 deviceDB.setValue(1);
+                System.out.println(deviceDB.getName());
 
             } else {
                 deviceDB.setValue(0);
+                deviceDB.setTimer(0);
             }
+
+        } else if(responseDetails != null && responseDetails.equalsIgnoreCase("notok")){
+            Device device = new Device(deviceDB.getDeviceId(), deviceDB.getName(), deviceDB.getType(), deviceDB.getValue(), deviceDB.getHouseholdId(),deviceDB.getTimer());
+
+            userUsernameMap.keySet().stream().filter(ctx -> ctx.session.isOpen() &
+                            userUsernameMap.get(ctx).getHouseholdId() == device.getHouseholdId())
+                    .forEach(session ->  {
+                session.send(
+                        new JSONObject()
+                                .put("opcode", OPCODE_CHANGE_DEVICE_NOTOK)
+                                .put("data", gson.toJson(device))
+                                .toString()
+                );
+            });
+
         }
         dbHandler.updateDeviceValue(deviceDB);
-        Device device = new Device(deviceDB.getDeviceId(), deviceDB.getName(), deviceDB.getType(), deviceDB.getValue(), deviceDB.getHouseholdId());
+        Device device = new Device(deviceDB.getDeviceId(), deviceDB.getName(), deviceDB.getType(), deviceDB.getValue(), deviceDB.getHouseholdId(),deviceDB.getTimer());
 
-        userUsernameMap.keySet().stream().filter(ctx -> ctx.session.isOpen()).forEach(session -> {
+        userUsernameMap.keySet().stream().filter(ctx -> ctx.session.isOpen() &
+                        userUsernameMap.get(ctx).getHouseholdId() == device.getHouseholdId())
+                .forEach(session -> {
             session.send(
                     new JSONObject()
                             .put("opcode", OPCODE_STATUS_DEVICE)
@@ -275,7 +329,7 @@ public class WebSocketServer {
         //Create household in database
         HouseholdDB householdDB = dbHandler.createHousehold(receivedHousehold);
 
-        Household newHousehold = new Household(householdDB.getHouseholdId(),householdDB.getName());
+        Household newHousehold = new Household(householdDB.getHouseholdId(), householdDB.getName());
 
         //Return new household
         System.out.println("Houseauth: Created new Household: (" + newHousehold.getHouseholdId() + ")" + newHousehold.getName());
@@ -341,7 +395,7 @@ public class WebSocketServer {
         //Check User in Database
         UserDB userdb = dbHandler.getUserUsingUsername(receivedUser.getUsername());
 
-        HouseholdDB householdDB =  dbHandler.getHousehold(receivedUser.getHouseholdId());
+        HouseholdDB householdDB = dbHandler.getHousehold(receivedUser.getHouseholdId());
 
 
         //  If error creating user (such as existing username), send error code
@@ -375,7 +429,7 @@ public class WebSocketServer {
         //Check if household exists in database
         HouseholdDB householdDB = dbHandler.getHousehold(newHouseholdId);
 
-        if (householdDB  == null) {
+        if (householdDB == null) {
             System.out.println("Could  not join household");
             //If not exist, send error
             senderCtx.send(
@@ -406,8 +460,8 @@ public class WebSocketServer {
         User user = userUsernameMap.get(senderCtx);
 
         // hämta device i databas, få command
-        DeviceDB deviceDB =  dbHandler.getDeviceDB(device.getDeviceId());
-        if(deviceDB.getHouseholdId() !=  null && !(user.getHouseholdId() == deviceDB.getHouseholdId())){
+        DeviceDB deviceDB = dbHandler.getDeviceDB(device.getDeviceId());
+        if (deviceDB.getHouseholdId() != null && !(user.getHouseholdId() == deviceDB.getHouseholdId())) {
 
             senderCtx.send(
                     new JSONObject()
@@ -418,12 +472,11 @@ public class WebSocketServer {
             return;
         }
 
-        System.out.println(deviceDB.getHouseholdId());
-        System.out.println(device.getHouseholdId());
+        int oldHouseHoldId = deviceDB.getHouseholdId();
 
-        if(device.getHouseholdId()==0){
+        if (device.getHouseholdId() == 0) {
             deviceDB.setHouseholdId(null);
-        }else{
+        } else {
             deviceDB.setHouseholdId(device.getHouseholdId());
         }
 
@@ -436,7 +489,10 @@ public class WebSocketServer {
         System.out.println(deviceDB.getHouseholdId());
 
         //Broadcast device update to all connections
-        userUsernameMap.keySet().stream().filter(ctx -> ctx.session.isOpen()).forEach(session -> {
+        userUsernameMap.keySet().stream().filter(ctx -> ctx.session.isOpen() &
+                userUsernameMap.get(ctx).getHouseholdId() == deviceDB.getHouseholdId())
+                .forEach(session -> {
+
             session.send(
                     new JSONObject()
                             .put("opcode", OPCODE_STATUS_DEVICE)

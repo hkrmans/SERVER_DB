@@ -22,12 +22,14 @@ public class DeviceDB {
     private String commandOn;
     @Column(name = "commandOff", nullable = false)
     private String commandOff;
+    @Column(name = "timer", nullable = true)
+    private long timer;
 
    public DeviceDB() {
 
    }
 
-    public DeviceDB(int deviceId, String name, String type, int value, Integer householdId, String commandOn, String commandOff) {
+    public DeviceDB(int deviceId, String name, String type, int value, Integer householdId, String commandOn, String commandOff,long timer) {
         this.deviceId = deviceId;
         this.name = name;
         this.type = type;
@@ -35,6 +37,7 @@ public class DeviceDB {
         this.householdId = householdId;
         this.commandOn = commandOn;
         this.commandOff = commandOff;
+        this.timer = timer;
     }
 
     public int getDeviceId() {
@@ -94,5 +97,13 @@ public class DeviceDB {
 
     public void setCommandOff(String commandOff) {
         this.commandOff = commandOff;
+    }
+
+    public long getTimer() {
+        return timer;
+    }
+
+    public void setTimer(long timer) {
+        this.timer = timer;
     }
 }

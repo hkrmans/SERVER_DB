@@ -42,10 +42,38 @@ public class DBHandler {
             deviceDBS = (ArrayList<DeviceDB>) typedQuery.getResultList();
 
             for (DeviceDB d : deviceDBS) {
-                householdDevices.add(new Device(d.getDeviceId(), d.getName(), d.getType(), d.getValue(), d.getHouseholdId()));
+                householdDevices.add(new Device(d.getDeviceId(), d.getName(), d.getType(), d.getValue(), d.getHouseholdId(),d.getTimer()));
             }
 
             return householdDevices;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        finally {
+            if (transaction.isActive()) {
+
+                transaction.rollback();
+            }
+            entityManager.clear();
+            entityManagerFactory.close();
+        }
+    }
+
+    public DeviceDB getDeviceDBFromAlarm(String command){
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        command = "'" + command + "'";
+        try {
+            String strQuery = "SELECT c FROM AlarmDB c WHERE c.alarmCode = " + command;
+            TypedQuery<AlarmDB> typedQuery = entityManager.createQuery(strQuery, AlarmDB.class);
+            ArrayList<AlarmDB> AlarmDBS;
+
+            AlarmDBS = (ArrayList<AlarmDB>) typedQuery.getResultList();
+            DeviceDB deviceDB = getDeviceDB(AlarmDBS.get(0).getDeviceId());
+
+            return deviceDB;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -234,6 +262,31 @@ public class DBHandler {
             transaction.commit();
             return householdDB;
         } finally {
+            if (transaction.isActive()) {
+
+                transaction.rollback();
+            }
+            entityManager.clear();
+            entityManagerFactory.close();
+        }
+    }
+
+    public ArrayList<DeviceDB> getAllDevices(){
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+
+        try {
+            String strQuery = "SELECT c FROM DeviceDB c";
+            TypedQuery<DeviceDB> typedQuery = entityManager.createQuery(strQuery, DeviceDB.class);
+            ArrayList<DeviceDB> deviceDBS;
+            deviceDBS = (ArrayList<DeviceDB>) typedQuery.getResultList();
+            return deviceDBS;
+
+        } catch (Exception e) {
+            return null;
+        }
+        finally {
             if (transaction.isActive()) {
 
                 transaction.rollback();

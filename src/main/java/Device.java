@@ -4,16 +4,18 @@ public class Device {
     String type;
     int value;
     int householdId;
+    long timer;
 
     public Device() {
     }
 
-    public Device(int deviceId, String name,String type,int value,int householdId){
+    public Device(int deviceId, String name,String type,int value,int householdId,long timer){
         this.deviceId = deviceId;
         this.name = name;
         this.type = type;
         this.value = value;
         this.householdId = householdId;
+        this.timer = timer;
     }
 
     public int getDeviceId() {
@@ -54,5 +56,13 @@ public class Device {
 
     public void setHouseholdId(int householdId) {
         this.householdId = householdId;
+    }
+
+    public long getTimer() {
+        return timer;
+    }
+
+    public void setTimer(long timer) {
+        this.timer = timer;
     }
 }

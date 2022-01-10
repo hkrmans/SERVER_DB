@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="627.0" prefWidth="911.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.server_db_admin.Controllers.AdminPanel">
+   <children>
+      <ImageView fitHeight="680.0" fitWidth="1003.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@img.png" />
+         </image>
+      </ImageView>
+      <TabPane fx:id="tabPane" onMouseClicked="#updateValuesTab" prefHeight="627.0" prefWidth="1003.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="CONNECTIONS">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ListView fx:id="connectionListView" layoutX="19.0" layoutY="23.0" prefHeight="545.0" prefWidth="647.0" />
+                        <DatePicker fx:id="datePickerConnections" layoutX="697.0" layoutY="19.0" onAction="#datePickerConnectionsOnAction" />
+                        <Button layoutX="697.0" layoutY="62.0" mnemonicParsing="false" onAction="#viewAllConnectionsOnAction" prefHeight="25.0" prefWidth="174.0" text="VIEW ALL" />
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="BACKLOG">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ListView fx:id="backlogListView" layoutX="19.0" layoutY="23.0" prefHeight="545.0" prefWidth="647.0" />
+                        <DatePicker fx:id="DatePicker" layoutX="697.0" layoutY="19.0" onAction="#DatePickerOnAction" />
+                        <Button fx:id="ViewAllButton" layoutX="697.0" layoutY="62.0" mnemonicParsing="false" onAction="#ViewAllButtonOnAction" prefHeight="25.0" prefWidth="174.0" text="VIEW ALL" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="CONNECTIONS MONTHLY OVERVIEW">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <LineChart fx:id="ConnectionOverviewLineChart" layoutX="206.0" layoutY="99.0">
+                          <xAxis>
+                            <CategoryAxis side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis side="LEFT" />
+                          </yAxis>
+                        </LineChart>
+                     </children></AnchorPane>
+              </content>
+            </Tab>
+            <Tab text="ERRORS MONTHLY OVERVIEW">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <LineChart fx:id="ErrorsOverviewLineChart" layoutX="206.0" layoutY="99.0">
+                          <xAxis>
+                            <CategoryAxis side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis side="LEFT" />
+                          </yAxis>
+                        </LineChart>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab text="LOGOUT">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button layoutX="411.0" layoutY="265.0" mnemonicParsing="false" onAction="#logOutButtonOnAction" text="LOG OUT">
+                           <font>
+                              <Font name="System Bold" size="32.0" />
+                           </font>
+                        </Button>
+                        <Button layoutX="411.0" layoutY="346.0" mnemonicParsing="false" onAction="#exitButtonOnAction" prefHeight="0.0" prefWidth="182.0" text="EXIT">
+                           <font>
+                              <Font name="System Bold" size="32.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>

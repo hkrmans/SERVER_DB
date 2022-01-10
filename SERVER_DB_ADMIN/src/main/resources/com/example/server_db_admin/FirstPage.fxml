@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.server_db_admin.Controllers.FirstPage">
+   <children>
+      <ImageView fx:id="FirstPageImage" fitHeight="554.0" fitWidth="654.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@img.png" />
+         </image></ImageView>
+      <PasswordField fx:id="password" layoutX="253.0" layoutY="244.0" promptText="Password" />
+      <TextField fx:id="email" layoutX="253.0" layoutY="179.0" promptText="Email" />
+      <Button fx:id="loginButton" layoutX="253.0" layoutY="303.0" mnemonicParsing="false" onAction="#loginButtonOnAction" prefHeight="25.0" prefWidth="149.0" text="LOGIN" />
+      <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="252.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@img2.png" />
+         </image>
+      </ImageView>
+      <Button layoutX="253.0" layoutY="342.0" mnemonicParsing="false" onAction="#exitButtonOnActionLogin" prefHeight="25.0" prefWidth="149.0" text="EXIT" />
+   </children>
+</AnchorPane>

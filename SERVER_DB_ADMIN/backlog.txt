@@ -1,0 +1,16 @@
+[2021-12-08 at 13:49:57 CET] Description: User cant connect to server
+[2021-12-08 at 13:51:21 CET] Description: User cant connect to server
+[2021-12-08 at 13:51:21 CET] Description: User cant connect to server
+[2021-12-08 at 13:51:21 CET] Description: User cant connect to server
+[2021-12-08 at 13:51:21 CET] Description: User cant connect to server
+[2021-12-08 at 13:51:21 CET] Description: User cant connect to server
+[2021-12-08 at 13:51:21 CET] Description: User cant connect to server
+[2022-12-08 at 13:51:21 CET] Description: User cant connect to server
+[2022-12-08 at 13:51:21 CET] Description: User cant connect to server
+[2022-12-08 at 13:51:21 CET] Description: User cant connect to server
+[2022-12-08 at 13:51:21 CET] Description: User cant connect to server
+[2022-12-08 at 13:51:21 CET] Description: User cant connect to server
+[2022-12-08 at 13:51:21 CET] Description: User cant connect to server
+[2022-12-08 at 13:51:21 CET] Description: Fire Alarm notok
+[2022-12-08 at 13:51:21 CET] Description: Outside Lighting notok
+
